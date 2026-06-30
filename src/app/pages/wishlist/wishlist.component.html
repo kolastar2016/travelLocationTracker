@@ -1,0 +1,43 @@
+<section class="wl-head">
+  <div>
+    <h1 class="wl-head__title">❤️ Мій список бажань</h1>
+    <p class="wl-head__subtitle">
+      {{ wishlist.count() }}
+      {{ wishlist.count() === 1 ? 'збережене місце' : 'збережених місць' }}
+    </p>
+  </div>
+  @if (wishlist.count() > 0) {
+    <button type="button" class="wl-head__clear" (click)="clearAll()">
+      🗑️ Очистити
+    </button>
+  }
+</section>
+
+@if (wishlist.count() === 0) {
+  <div class="empty">
+    <span class="empty__emoji">🧳</span>
+    <h2>Список поки що порожній</h2>
+    <p>Знайдіть цікаві місця та натисніть 🤍, щоб додати їх сюди.</p>
+    <a routerLink="/" class="empty__btn">🔍 Перейти до пошуку</a>
+  </div>
+} @else {
+  <div class="grid">
+    @for (place of wishlist.items(); track place.id) {
+      <app-place-card
+        [place]="place"
+        [saved]="true"
+        (toggleSave)="onToggleSave($event)"
+        (openDetails)="openDetails($event)"
+      />
+    }
+  </div>
+}
+
+@if (selected(); as place) {
+  <app-place-detail
+    [place]="place"
+    [saved]="wishlist.isSaved(place.id)"
+    (close)="closeDetails()"
+    (toggleSave)="onToggleSave($event)"
+  />
+}

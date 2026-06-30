@@ -1,0 +1,70 @@
+<article class="card" (click)="openDetails.emit(place)">
+  <div class="card__media">
+    @if (cover) {
+      <img
+        class="card__img"
+        [src]="cover"
+        [alt]="place.name"
+        loading="lazy"
+        (error)="onImgError()"
+      />
+    } @else {
+      <div class="card__placeholder">
+        <span class="card__placeholder-emoji">{{ place.emoji }}</span>
+      </div>
+    }
+
+    @if (place.photos.length > 1) {
+      <button
+        type="button"
+        class="card__photo-nav"
+        (click)="nextPhoto($event)"
+        title="Наступне фото"
+      >
+        {{ photoIndex() + 1 }}/{{ place.photos.length }} ❯
+      </button>
+    }
+
+    <button
+      type="button"
+      class="card__save"
+      [class.card__save--active]="saved"
+      [title]="saved ? 'Прибрати зі списку' : 'Додати у список бажань'"
+      (click)="$event.stopPropagation(); toggleSave.emit(place)"
+    >
+      {{ saved ? '❤️' : '🤍' }}
+    </button>
+
+    <span class="card__category">{{ place.emoji }} {{ place.category }}</span>
+  </div>
+
+  <div class="card__body">
+    <h3 class="card__title">{{ place.name }}</h3>
+
+    @if (place.address) {
+      <p class="card__address">📍 {{ place.address }}</p>
+    }
+
+    <div class="card__meta">
+      @if (place.rating != null) {
+        <span class="rating" [class]="ratingClass">
+          ⭐ {{ place.rating.toFixed(1) }}
+        </span>
+      } @else if (!premiumEnabled) {
+        <span class="rating rating--premium" title="Рейтинг доступний лише з платним доступом Foursquare">
+          🔒 Рейтинг — Premium
+        </span>
+      } @else {
+        <span class="rating rating--none">без рейтингу</span>
+      }
+
+      @if (formatDistance()) {
+        <span class="card__distance">🚶 {{ formatDistance() }}</span>
+      }
+
+      @if (place.tips.length) {
+        <span class="card__tips-count">💬 {{ place.tips.length }}</span>
+      }
+    </div>
+  </div>
+</article>

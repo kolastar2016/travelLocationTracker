@@ -1,0 +1,28 @@
+<header class="topbar">
+  <div class="topbar__inner">
+    <a routerLink="/" class="brand">
+      <span class="brand__logo">🧭</span>
+      <span class="brand__name">Travel<span>Tracker</span></span>
+    </a>
+
+    <nav class="nav">
+      <a routerLink="/" routerLinkActive="nav__link--active" [routerLinkActiveOptions]="{ exact: true }" class="nav__link">
+        🔍 Пошук
+      </a>
+      <a routerLink="/wishlist" routerLinkActive="nav__link--active" class="nav__link">
+        ❤️ Список
+        @if (wishlist.count() > 0) {
+          <span class="nav__badge">{{ wishlist.count() }}</span>
+        }
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <router-outlet />
+</main>
+
+<footer class="footer">
+  <p>🧭 Travel Tracker · Angular 19 · дані Foursquare Places API</p>
+</footer>

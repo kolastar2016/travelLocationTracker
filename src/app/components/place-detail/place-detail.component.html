@@ -1,0 +1,134 @@
+<div class="overlay" (click)="onBackdrop($event)">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button type="button" class="modal__close" (click)="close.emit()" title="Закрити">✕</button>
+
+    <!-- Галерея -->
+    <div class="gallery">
+      @if (visiblePhotos.length) {
+        <img
+          class="gallery__main"
+          [src]="place.photos[activePhoto()]"
+          [alt]="place.name"
+          (error)="onImgError(activePhoto())"
+        />
+      } @else {
+        <div class="gallery__placeholder">
+          <span class="gallery__placeholder-emoji">{{ place.emoji }}</span>
+        </div>
+      }
+
+      @if (place.photos.length > 1) {
+        <div class="gallery__thumbs">
+          @for (photo of place.photos; track $index) {
+            <img
+              class="gallery__thumb"
+              [class.gallery__thumb--active]="activePhoto() === $index"
+              [src]="photo"
+              [alt]="place.name + ' фото ' + ($index + 1)"
+              (click)="selectPhoto($index)"
+              (error)="onImgError($index)"
+            />
+          }
+        </div>
+      }
+    </div>
+
+    <div class="modal__body">
+      <div class="modal__header">
+        <div>
+          <span class="modal__category">{{ place.emoji }} {{ place.category }}</span>
+          <h2 class="modal__title">{{ place.name }}</h2>
+        </div>
+        <button
+          type="button"
+          class="modal__save"
+          [class.modal__save--active]="saved"
+          (click)="toggleSave.emit(place)"
+        >
+          {{ saved ? '❤️ У списку' : '🤍 Додати' }}
+        </button>
+      </div>
+
+      <!-- Деталі -->
+      <div class="facts">
+        @if (place.rating != null) {
+          <div class="fact">
+            <span class="fact__label">Рейтинг</span>
+            <span class="fact__value">⭐ {{ place.rating.toFixed(1) }} / 10</span>
+          </div>
+        } @else if (!premiumEnabled) {
+          <div class="fact fact--premium">
+            <span class="fact__label">Рейтинг</span>
+            <span class="fact__value">🔒 Premium</span>
+          </div>
+        }
+        <div class="fact">
+          <span class="fact__label">Тип</span>
+          <span class="fact__value">{{ place.category }}</span>
+        </div>
+        @if (formatDistance()) {
+          <div class="fact">
+            <span class="fact__label">Відстань</span>
+            <span class="fact__value">🚶 {{ formatDistance() }}</span>
+          </div>
+        }
+        @if (place.city) {
+          <div class="fact">
+            <span class="fact__label">Місто</span>
+            <span class="fact__value">{{ place.city }}</span>
+          </div>
+        }
+      </div>
+
+      @if (place.address) {
+        <p class="modal__address">📍 {{ place.address }}</p>
+      }
+
+      @if (place.categories.length > 1) {
+        <div class="tags">
+          @for (cat of place.categories; track cat.id) {
+            <span class="tag">{{ cat.name }}</span>
+          }
+        </div>
+      }
+
+      <!-- Поради / відгуки -->
+      <section class="tips">
+        <h3 class="tips__title">💬 Поради та відгуки</h3>
+        @if (place.tips.length) {
+          <ul class="tips__list">
+            @for (tip of place.tips; track tip.id) {
+              <li class="tip">
+                <p class="tip__text">«{{ tip.text }}»</p>
+                @if (tip.author) {
+                  <span class="tip__author">— {{ tip.author }}</span>
+                }
+              </li>
+            }
+          </ul>
+        } @else if (!premiumEnabled) {
+          <div class="tips__premium">
+            <span class="tips__premium-icon">🔒</span>
+            <p>
+              Відгуки та поради доступні лише з <strong>платним (Premium) доступом</strong>
+              Foursquare Places API. Зараз платні запити вимкнено.
+            </p>
+          </div>
+        } @else {
+          <p class="tips__empty">Поки що немає відгуків для цього місця.</p>
+        }
+      </section>
+
+      @if (place.latitude && place.longitude) {
+        <a
+          class="map-link"
+          [href]="'https://www.google.com/maps/search/?api=1&query=' + place.latitude + ',' + place.longitude"
+          target="_blank"
+          rel="noopener"
+        >
+          🗺️ Відкрити на карті
+        </a>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,107 @@
+<section class="hero">
+  <h1 class="hero__title">Куди вирушимо? ✈️</h1>
+  <p class="hero__subtitle">
+    Знаходьте популярні місця, зберігайте найкращі у свій список бажань
+    і плануйте ідеальну подорож.
+  </p>
+
+  <form class="search" (ngSubmit)="search()">
+    <div class="search__row">
+      <div class="search__field">
+        <span class="search__icon">📍</span>
+        <input
+          type="text"
+          name="near"
+          [(ngModel)]="near"
+          placeholder="Місто або геолокація"
+          autocomplete="off"
+        />
+      </div>
+      <button type="submit" class="search__btn" [disabled]="loading()">
+        @if (loading()) { Шукаємо… } @else { Знайти }
+      </button>
+    </div>
+
+    <div class="search__field" [class.search__field--disabled]="!canFilter()">
+      <span class="search__icon">🔍</span>
+      <input
+        type="text"
+        name="filter"
+        [ngModel]="filterTerm()"
+        (ngModelChange)="filterTerm.set($event)"
+        [disabled]="!canFilter()"
+        [placeholder]="canFilter()
+          ? 'Фільтр за назвою серед знайдених…'
+          : 'Спочатку знайдіть місто, щоб фільтрувати'"
+        autocomplete="off"
+      />
+    </div>
+  </form>
+
+  <div class="examples">
+    <span class="examples__label">Спробуйте:</span>
+    @for (city of examples; track city) {
+      <button type="button" class="examples__chip" (click)="quickSearch(city)">
+        {{ city }}
+      </button>
+    }
+  </div>
+
+  @if (error()) {
+    <p class="alert alert--error">{{ error() }}</p>
+  }
+</section>
+
+@if (searched() && !loading()) {
+  <div class="status-bar">
+    <span class="status-bar__count">
+      Знайдено: <strong>{{ displayedResults().length }}</strong>
+      @if (filterTerm().trim() && displayedResults().length !== results().length) {
+        <span class="status-bar__total">з {{ results().length }}</span>
+      }
+    </span>
+  </div>
+}
+
+@if (loading()) {
+  <div class="grid">
+    @for (i of [1,2,3,4,5,6]; track i) {
+      <div class="skeleton"></div>
+    }
+  </div>
+} @else if (searched() && results().length === 0) {
+  <div class="empty">
+    <span class="empty__emoji">🗺️</span>
+    <p>Нічого не знайдено. Спробуйте інше місто.</p>
+  </div>
+} @else if (searched() && displayedResults().length === 0) {
+  <div class="empty">
+    <span class="empty__emoji">🔍</span>
+    <p>За запитом «{{ filterTerm() }}» серед знайдених місць нічого немає.</p>
+  </div>
+} @else if (displayedResults().length) {
+  <div class="grid">
+    @for (place of displayedResults(); track place.id) {
+      <app-place-card
+        [place]="place"
+        [saved]="isSaved(place.id)"
+        (toggleSave)="onToggleSave($event)"
+        (openDetails)="openDetails($event)"
+      />
+    }
+  </div>
+} @else if (!searched()) {
+  <div class="empty">
+    <span class="empty__emoji">🌍</span>
+    <p>Введіть місто вгорі, щоб побачити цікаві місця поруч.</p>
+  </div>
+}
+
+@if (selected(); as place) {
+  <app-place-detail
+    [place]="place"
+    [saved]="isSaved(place.id)"
+    (close)="closeDetails()"
+    (toggleSave)="onToggleSave($event)"
+  />
+}
