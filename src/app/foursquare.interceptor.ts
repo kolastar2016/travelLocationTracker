@@ -4,44 +4,39 @@ export const foursquareInterceptor: HttpInterceptorFn = (req, next) => {
   try {
     const isGitHubPages = window.location.hostname.includes('github.io');
 
-    // Проверяем, относится ли запрос к Foursquare
     if (req.url.includes('/foursquare')) {
-      console.log('%c[Interceptor] Обнаружен запрос к Foursquare! Хост:', 'color: #7c3aed; font-weight: bold;', window.location.hostname);
+      console.log('%c[Interceptor] Обнаружен запрос к Foursquare!', 'color: #7c3aed; font-weight: bold;');
 
       if (isGitHubPages) {
-        console.log('%c[Interceptor] Режим GitHub Pages. Перенаправляем на CORS-прокси...', 'color: #f59e0b; font-weight: bold;');
+        console.log('%c[Interceptor] Режим GitHub Pages. Собираем URL с нуля...', 'color: #f59e0b; font-weight: bold;');
 
-        // 1. Извлекаем текущие query-параметры в виде строки
+        // 1. Извлекаем query-параметры (near, limit, fields)
         const queryParamsString = req.params.toString();
 
-        // 2. Формируем чистый URL к Foursquare (меняем префикс на реальный домен API с версией /v3)
-        // Если в запросе '/foursquare/places/search', то получится 'https://foursquare.com'
-        const cleanUrl = req.url.replace('/foursquare', 'https://foursquare.com');
+        // 2. Жестко и канонично задаем базовый эндпоинт Foursquare API v3
+        const baseFoursquareUrl = 'https://foursquare.com';
         
-        // Склеиваем домен, путь и параметры воедино
-        const fullOriginalUrl = queryParamsString ? `${cleanUrl}?${queryParamsString}` : cleanUrl;
+        // 3. Склеиваем параметры с базовым URL
+        const fullOriginalUrl = queryParamsString ? `${baseFoursquareUrl}?${queryParamsString}` : baseFoursquareUrl;
 
-        // 3. Упаковываем это в AllOrigins прокси
-        const proxiedUrl = `https://allorigins.win${encodeURIComponent(fullOriginalUrl)}`;
+        // 4. Оборачиваем ВЕСЬ адрес в AllOrigins через /raw?url=
+        // ВНИМАТЕЛЬНО: проверяйте наличие /raw?url= в строке ниже!
+        const proxiedUrl = `https://allorigins.win/raw?url=${encodeURIComponent(fullOriginalUrl)}`;
 
         console.log('%c[Interceptor] Финальный URL для Network:', 'color: #10b981;', proxiedUrl);
 
-        // 4. Клонируем запрос: заменяем URL на проксированный, а параметры обнуляем
+        // 5. Клонируем запрос с правильным URL
         const modifiedReq = req.clone({
           url: proxiedUrl,
-          params: new HttpParams()
+          params: new HttpParams() // Очищаем параметры, так как они уже зашиты внутри url
         });
 
         return next(modifiedReq);
-      } else {
-        console.log('%c[Interceptor] Режим Локальный (localhost). Запрос идет стандартно через proxy.conf.json', 'color: #1d4ed8;');
       }
     }
   } catch (error) {
-    // Если упала какая-то строковая функция, мы увидим это в консоли, а не пустой экран
-    console.error('%c[Interceptor] КРИТИЧЕСКАЯ ОШИБКА ВНУТРИ ИНТЕРЦЕПТОРА:', 'color: red; font-weight: bold;', error);
+    console.error('%c[Interceptor] КРИТИЧЕСКАЯ ОШИБКА:', 'color: red;', error);
   }
 
-  // Если мы локально или произошел сбой — пропускаем запрос как есть
   return next(req);
 };
