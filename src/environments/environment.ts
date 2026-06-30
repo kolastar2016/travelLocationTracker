@@ -18,7 +18,7 @@
  *
  */
 export const environment = {
-  production: true,
+  production: false,
 
   /** Service Key для Foursquare Places API. Залиште порожнім для демо-режиму. */
   foursquareApiKey: 'WX0LHAZV4LL0KEN35MY0OQTPCOEX1ADI1XHFZ2TKZXRRD4MY',
@@ -26,8 +26,11 @@ export const environment = {
   /** Версія Foursquare Places API (заголовок X-Places-Api-Version). */
   foursquareApiVersion: '2025-06-17',
 
-  //foursquareProxyPath: '/foursquare',
-  foursquareProxyPath: 'https://places-api.foursquare.com',
+  /**
+   * Шлях до Foursquare через dev-proxy (обхід CORS).
+   * proxy.conf.json перенаправляє `/foursquare/*` → `https://places-api.foursquare.com/*`.
+   */
+  foursquareProxyPath: '/foursquare/*',
 
   /** Прямий URL API (для довідки / серверного проксі у продакшні). */
   foursquareBaseUrl: 'https://places-api.foursquare.com',
