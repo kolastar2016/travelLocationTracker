@@ -13,7 +13,7 @@ export const foursquareInterceptor: HttpInterceptorFn = (req, next) => {
     const fullOriginalUrl = queryParams ? `${originalFoursquareUrl}?${queryParams}` : originalFoursquareUrl;
 
     // Склеиваем с AllOrigins через правильный синтаксис ${...}
-    const proxiedUrl = `https://allorigins.win{encodeURIComponent(fullOriginalUrl)}`;
+    const proxiedUrl = `https://allorigins.win${encodeURIComponent(fullOriginalUrl)}`;
 
     const modifiedReq = req.clone({
       url: proxiedUrl,
