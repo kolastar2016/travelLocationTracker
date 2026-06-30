@@ -12,10 +12,10 @@ export const foursquareInterceptor: HttpInterceptorFn = (req, next) => {
 
     // 2. Жестко собираем КАНОНИЧНЫЙ и правильный URL для API Foursquare v3
     const baseFoursquareUrl = 'https://places-api.foursquare.com';
-    const fullFoursquareUrl = queryParamsString ? `${baseFoursquareUrl}` : baseFoursquareUrl;
+    const fullFoursquareUrl = queryParamsString ? `${baseFoursquareUrl}?${queryParamsString}` : baseFoursquareUrl;
 
     // 3. Просто приписываем CORS-прокси в начало строки. Никакого encodeURIComponent не нужно!
-    const proxiedUrl = `https://herokuapp.com`+ fullFoursquareUrl;
+    const proxiedUrl = fullFoursquareUrl;
 
     console.log('%c[Interceptor] Итоговый URL:', 'color: #10b981;', proxiedUrl);
 
