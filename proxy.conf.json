@@ -1,8 +1,9 @@
 {
   "/foursquare": {
     "target": "https://places-api.foursquare.com",
-    "secure": false,
+    "secure": true,
     "changeOrigin": true,
+    "pathRewrite": { "^/foursquare": "" },
     "logLevel": "debug"
   }
 }

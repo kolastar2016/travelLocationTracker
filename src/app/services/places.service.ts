@@ -29,7 +29,7 @@ const CATEGORY_EMOJI: Record<string, string> = {
 /**
  *
  * Джерело даних — ВИКЛЮЧНО реальний API (через dev-proxy) та кеш.
- * якщо API недоступний — повертається помилка.
+ * Жодних демо/тестових даних: якщо API недоступний — повертається помилка.
  * Результати кешуються на 10 хвилин за ключем "місто", щоб не повторювати запити.
  */
 @Injectable({ providedIn: 'root' })
@@ -58,6 +58,7 @@ export class PlacesService {
     const cached = this.cache.get<Place[]>(key);
     if (cached) {
       this.servedFromCache.set(true);
+      
       console.log(
         '%c[PlacesService] ⚡ Дані з КЕШУ (без запиту до API)',
         'color:#15803d;font-weight:bold',
@@ -73,6 +74,7 @@ export class PlacesService {
     this.servedFromCache.set(false);
 
     if (!environment.foursquareApiKey) {
+      
       console.warn('%c[PlacesService] ⚠️ Немає Foursquare API-ключа', 'color:#b45309');
       return throwError(
         () => new Error('Не задано Foursquare API-ключ (environment.foursquareApiKey).'),
@@ -84,6 +86,7 @@ export class PlacesService {
     return this.searchFoursquare(params).pipe(
       tap((places) => {
         this.cache.set(key, places);
+        
         console.log(
           '%c[PlacesService] ✅ Отримано дані з API (збережено в кеш на 10 хв)',
           'color:#7c3aed;font-weight:bold',
@@ -105,8 +108,7 @@ export class PlacesService {
 
   private searchFoursquare(params: SearchParams): Observable<Place[]> {
     // Через dev-proxy (обхід CORS): /foursquare/* → places-api.foursquare.com/*
-    // const url = `${environment.foursquareProxyPath}/places/search`;
-    const url = '/api/search'; // Через dev-proxy (обхід CORS): /api/foursquare/* → places-api.foursquare.com/*
+    const url = `${environment.foursquareProxyPath}/places/search`;
 
     const baseFields = [
       'fsq_place_id',
@@ -117,7 +119,8 @@ export class PlacesService {
       'latitude',
       'longitude',
     ];
-    
+    // Premium-поля (платні, дають 429 без кредитів). Тимчасово ВИМКНЕНІ, щоб
+    // не смикати платні запити. Вмикаються через environment.premiumFeaturesEnabled.
     const premiumFields = ['rating', 'photos', 'tips'];
     const fields = environment.premiumFeaturesEnabled
       ? [...baseFields, ...premiumFields]
