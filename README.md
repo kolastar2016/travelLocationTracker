@@ -27,21 +27,6 @@ npm start        # dev-сервер на http://localhost:4200
 npm run build    # результат у dist/travel-tracker
 ```
 
-## 🔑 Підключення реального Foursquare API (необовʼязково)
-
-За замовчуванням додаток працює на **демо-даних** (міста Київ, Львів, Париж та
-узагальнені місця для будь-якого іншого запиту).
-
-Щоб отримувати реальні дані:
-
-1. Зареєструйтесь на https://foursquare.com/developers/
-2. Створіть проєкт і отримайте **Service Key** для Places API.
-3. Вставте ключ у `src/environments/environment.ts`:
-
-   ```ts
-   foursquareApiKey: 'ВАШ_КЛЮЧ',
-   ```
-
 Якщо ключ заданий — додаток робить реальні запити; якщо станеться помилка
 (невірний ключ, ліміт, відсутність мережі) — автоматично повертається до демо-даних.
 
@@ -50,7 +35,7 @@ npm run build    # результат у dist/travel-tracker
 > - **CORS.** Новий Places API не дозволяє прямі запити з браузера. Тому запити
 >   йдуть через **dev-proxy** ([`proxy.conf.json`](proxy.conf.json)): шлях
 >   `/foursquare/*` перенаправляється на `places-api.foursquare.com/*`. Через це
->   реальний API працює **тільки під час `npm start`** (`ng serve`). Для продакшну
+>   реальний API працює **тільки під час `npm start`**. Для продакшну
 >   (`npm run build`) потрібен власний бекенд-проксі.
 > - **Premium-поля.** Рейтинг, фотографії та відгуки (tips) у новому API платні
 >   й потребують кредитів. На безкоштовному ключі доступний лише **базовий пошук**
@@ -64,8 +49,7 @@ npm run build    # результат у dist/travel-tracker
 
 ```
 src/app/
-├── models/place.model.ts          # моделі Place, PlaceTip, SearchParams
-├── data/demo-data.ts              # демо-набір місць + фільтрація
+├── interfaces/place.model.ts          # моделі Place, PlaceTip, SearchParams
 ├── services/
 │   ├── cache.service.ts           # in-memory кеш із TTL (10 хв)
 │   ├── places.service.ts          # Foursquare API + fallback + кешування
