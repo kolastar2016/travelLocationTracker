@@ -107,7 +107,9 @@ export class PlacesService {
     // Через dev-proxy (обхід CORS): /foursquare/* → places-api.foursquare.com/*
     //const url = `${environment.foursquareProxyPath}/places/search`;
     const foursquareUrl = 'https://places-api.foursquare.com';
-    const url = `https://allorigins.win/decode?url=${encodeURIComponent(foursquareUrl)}`;
+    const encodedUrl = encodeURIComponent(foursquareUrl);
+
+    const url = `https://allorigins.win{encodedUrl}`;
 
     const baseFields = [
       'fsq_place_id',
