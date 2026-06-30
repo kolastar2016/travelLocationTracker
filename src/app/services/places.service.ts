@@ -105,7 +105,8 @@ export class PlacesService {
 
   private searchFoursquare(params: SearchParams): Observable<Place[]> {
     // Через dev-proxy (обхід CORS): /foursquare/* → places-api.foursquare.com/*
-    const url = `${environment.foursquareProxyPath}/places/search`;
+    // const url = `${environment.foursquareProxyPath}/places/search`;
+    const url = '/api/search'; // Через dev-proxy (обхід CORS): /api/foursquare/* → places-api.foursquare.com/*
 
     const baseFields = [
       'fsq_place_id',
