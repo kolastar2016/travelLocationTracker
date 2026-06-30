@@ -109,7 +109,7 @@ export class PlacesService {
     const foursquareUrl = 'https://places-api.foursquare.com';
     const encodedUrl = encodeURIComponent(foursquareUrl);
 
-    const url = `https://allorigins.win{encodedUrl}`;
+    const url = `https://allorigins.win` + encodedUrl;
 
     const baseFields = [
       'fsq_place_id',
