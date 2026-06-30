@@ -30,7 +30,7 @@ export const environment = {
    * Шлях до Foursquare через dev-proxy (обхід CORS).
    * proxy.conf.json перенаправляє `/foursquare/*` → `https://places-api.foursquare.com/*`.
    */
-  foursquareProxyPath: 'https://places-api.foursquare.com',
+  foursquareProxyPath: 'https://allorigins.win',
 
   /** Прямий URL API (для довідки / серверного проксі у продакшні). */
   foursquareBaseUrl: 'https://places-api.foursquare.com',
