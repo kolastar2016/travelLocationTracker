@@ -26,11 +26,8 @@ export const environment = {
   /** Версія Foursquare Places API (заголовок X-Places-Api-Version). */
   foursquareApiVersion: '2025-06-17',
 
-  /**
-   * Шлях до Foursquare через dev-proxy (обхід CORS).
-   * proxy.conf.json перенаправляє `/foursquare/*` → `https://places-api.foursquare.com/*`.
-   */
-  foursquareProxyPath: '/foursquare',
+  //foursquareProxyPath: '/foursquare',
+  foursquareProxyPath: 'https://places-api.foursquare.com',
 
   /** Прямий URL API (для довідки / серверного проксі у продакшні). */
   foursquareBaseUrl: 'https://places-api.foursquare.com',
