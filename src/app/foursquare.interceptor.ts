@@ -1,4 +1,5 @@
 import { HttpInterceptorFn, HttpParams } from '@angular/common/http';
+import { environment } from '../environments/environment'; // Убедитесь в правильности пути к вашему файлу environment
 
 export const foursquareInterceptor: HttpInterceptorFn = (req, next) => {
   try {
@@ -8,27 +9,34 @@ export const foursquareInterceptor: HttpInterceptorFn = (req, next) => {
       console.log('%c[Interceptor] Обнаружен запрос к Foursquare!', 'color: #7c3aed; font-weight: bold;');
 
       if (isGitHubPages) {
-        console.log('%c[Interceptor] Режим GitHub Pages. Собираем URL с нуля...', 'color: #f59e0b; font-weight: bold;');
+        console.log('%c[Interceptor] Режим GitHub Pages. Собираем URL через AllOrigins...', 'color: #f59e0b; font-weight: bold;');
 
-        // 1. Извлекаем query-параметры (near, limit, fields)
-        const queryParamsString = req.params.toString();
+        // 1. Получаем параметры поиска (near, limit, fields), которые передал сервис
+        const originalParams = req.params.toString();
 
-        // 2. Жестко и канонично задаем базовый эндпоинт Foursquare API v3
+        // 2. Жестко задаем базовый эндпоинт Foursquare API v3
         const baseFoursquareUrl = 'https://foursquare.com';
         
-        // 3. Склеиваем параметры с базовым URL
-        const fullOriginalUrl = queryParamsString ? `${baseFoursquareUrl}?${queryParamsString}` : baseFoursquareUrl;
+        // Склеиваем базовый URL и параметры поиска
+        const fullFoursquareUrl = originalParams ? `${baseFoursquareUrl}?${originalParams}` : baseFoursquareUrl;
 
-        // 4. Оборачиваем ВЕСЬ адрес в AllOrigins через /raw?url=
-        // ВНИМАТЕЛЬНО: проверяйте наличие /raw?url= в строке ниже!
-        const proxiedUrl = `https://allorigins.win/raw?url=${encodeURIComponent(fullOriginalUrl)}`;
+        // 3. Формируем финальный URL для AllOrigins
+        const proxiedUrl = `https://allorigins.win/raw?url=${encodeURIComponent(fullFoursquareUrl)}`;
 
         console.log('%c[Interceptor] Финальный URL для Network:', 'color: #10b981;', proxiedUrl);
 
-        // 5. Клонируем запрос с правильным URL
+        // 4. КЛОНИРУЕМ ЗАПРОС:
+        // - Меняем URL на проксированный
+        // - Очищаем заголовки 'Authorization' и 'X-Places-Api-Version', чтобы браузер НЕ отправлял проверочный запрос OPTIONS (Preflight)
+        // - Передаем ваш API-ключ прямо в заголовках к AllOrigins (он пробросит их на Foursquare)
         const modifiedReq = req.clone({
           url: proxiedUrl,
-          params: new HttpParams() // Очищаем параметры, так как они уже зашиты внутри url
+          params: new HttpParams(), // Очищаем параметры, они уже внутри url
+          setHeaders: {
+            'Authorization': `Bearer ${environment.foursquareApiKey}`,
+            'X-Places-Api-Version': environment.foursquareApiVersion,
+            'accept': 'application/json'
+          }
         });
 
         return next(modifiedReq);
