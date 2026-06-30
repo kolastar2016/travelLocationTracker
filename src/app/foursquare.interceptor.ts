@@ -15,7 +15,7 @@ export const foursquareInterceptor: HttpInterceptorFn = (req, next) => {
     const fullFoursquareUrl = queryParamsString ? `${baseFoursquareUrl}?${queryParamsString}` : baseFoursquareUrl;
 
     // 3. Просто приписываем CORS-прокси в начало строки. Никакого encodeURIComponent не нужно!
-    const proxiedUrl = `https://herokuapp.com{fullFoursquareUrl}`;
+    const proxiedUrl = `https://herokuapp.com${fullFoursquareUrl}`;
 
     console.log('%c[Interceptor] Итоговый URL:', 'color: #10b981;', proxiedUrl);
 
