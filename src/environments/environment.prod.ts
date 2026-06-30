@@ -18,7 +18,7 @@
  *
  */
 export const environment = {
-  production: false,
+  production: true,
 
   /** Service Key для Foursquare Places API. Залиште порожнім для демо-режиму. */
   foursquareApiKey: 'KRNPCNCJCZUBAKJFGMGMBHSKTV554I5RVJU4KAIP0FDGUJKD',
